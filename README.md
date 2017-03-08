@@ -1,4 +1,4 @@
-# charge
+l# charge
 微信和支付宝充值功能，接入到第三方apk的接口
 
 主要了解下微信和支付宝充值功能，其实客户端操作很简单，主要功能是服务器的
@@ -31,9 +31,60 @@
 	https://doc.open.alipay.com/doc2/detail.htm?spm=a219a.7629140.0.0.x7kkCI&treeId=204&articleId=105465&docType=1
 	详情参考官网
 
+	<activity
+            android:name="com.alipay.sdk.app.H5PayActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind" >
+        </activity>
+        <activity
+            android:name="com.alipay.sdk.auth.AuthActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind" >
+        </activity>
+    在manifest中设置这个就可以了
+
 	主要就是2的方法调用，可以参考demo里面的实现
 
 2、微信支付
+
+	compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:1.0.2'
+	android gradle通过这个导入sdk包
+
+	自定义个WXPayEntryActivity这个activity，继承activity实现IWXAPIEventHandler，我们就可以在
+	@Override
+    public void onReq(BaseReq baseReq) {
+
+    }
+
+    @Override
+    public void onResp(BaseResp baseResp) {
+        Log.d("WXPayEntryActivity", "resp error " + baseResp.errStr + ", code " + baseResp.errCode);
+
+    }
+    这个里面处理返回参数，结果了
+
+    		PayReq request = new PayReq();
+            request.appId = jsonObject.optString("appid");
+            request.partnerId = jsonObject.optString("partnerid");
+            request.prepayId= jsonObject.optString("prepayid");
+            request.packageValue = jsonObject.optString("package");
+            request.nonceStr= jsonObject.optString("noncestr");
+            request.timeStamp= jsonObject.optString("timestamp");
+            request.sign= jsonObject.optString("sign");
+            iwxapi.sendReq(request);
+
+            new个req，参数一般是从服务器返回的，服务器生成的参数返回给我们，一般不写死在本地
+
+            iwxapi是从哪里来的呢
+
+            iwxapi = WXAPIFactory.createWXAPI(this, "appid", false);
+        	iwxapi.registerApp("appid");
+
+        	这个appid是我们在微信后台申请的，自己可以申请
+
+
 
 
 
